@@ -343,215 +343,236 @@
 
   <script>
 
-    // GOOGLE TEACHABLE MACHINE MODEL
-    const URL = "https://teachablemachine.withgoogle.com/models/XZiY88SdC/";
+const URL = "https://teachablemachine.withgoogle.com/models/XZiY88SdC/";
 
-    let model;
+let model;
+let modelLoaded = false;
 
-    async function loadModel(){
+// LOAD MODEL
+async function loadModel() {
 
-      const modelURL = URL + "model.json";
-      const metadataURL = URL + "metadata.json";
+    try {
 
-      model = await tmImage.load(modelURL, metadataURL);
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
 
-      console.log("Model Loaded Successfully");
+        model = await tmImage.load(modelURL, metadataURL);
 
+        modelLoaded = true;
+
+        document.getElementById("status").innerText =
+            "AI Model Ready";
+
+        console.log("Model Loaded Successfully");
+
+    } catch(error) {
+
+        console.error(error);
+
+        document.getElementById("status").innerText =
+            "Model Failed To Load";
     }
+}
 
-    loadModel();
+loadModel();
 
-    // REPORT ID
-    const reportId =
-      "VR-" + Math.floor(Math.random() * 1000000);
 
-    document.getElementById("reportId").innerText =
-      reportId;
+// REPORT ID
+const reportId =
+    "VR-" + Math.floor(Math.random() * 1000000);
 
-    // DATE + TIME
-    const now = new Date();
+document.getElementById("reportId").innerText =
+    reportId;
 
-    document.getElementById("date").innerText =
-      now.toLocaleDateString();
 
-    document.getElementById("time").innerText =
-      now.toLocaleTimeString();
+// DATE + TIME
+const now = new Date();
 
-    // IMAGE PREVIEW
-    document.getElementById("imageUpload")
-    .addEventListener("change", function(event){
+document.getElementById("date").innerText =
+    now.toLocaleDateString();
 
-      const file = event.target.files[0];
+document.getElementById("time").innerText =
+    now.toLocaleTimeString();
 
-      if(file){
+
+// IMAGE PREVIEW
+document.getElementById("imageUpload")
+.addEventListener("change", function(event) {
+
+    const file = event.target.files[0];
+
+    if(file) {
 
         const reader = new FileReader();
 
-        reader.onload = function(e){
+        reader.onload = function(e) {
 
-          const preview =
-            document.getElementById("preview");
+            const preview =
+                document.getElementById("preview");
 
-          preview.src = e.target.result;
+            preview.src = e.target.result;
 
-          preview.style.display = "block";
-
+            preview.style.display = "block";
         };
 
         reader.readAsDataURL(file);
+    }
+});
 
-      }
 
-    });
+// ANALYZE IMAGE
+async function predictImage() {
 
-    // MAIN AI FUNCTION
-    async function predictImage(){
+    if(!modelLoaded) {
 
-      const image =
+        alert("AI model is still loading. Please wait 5 seconds and try again.");
+
+        return;
+    }
+
+    const image =
         document.getElementById("preview");
 
-      if(!image.src){
+    if(!image.src) {
 
         alert("Please upload an image first.");
 
         return;
+    }
 
-      }
+    document.getElementById("status").innerText =
+        "Analyzing Image...";
 
-      const prediction =
-        await model.predict(image);
+    try {
 
-      let potholeProbability = 0;
-      let normalProbability = 0;
+        const prediction =
+            await model.predict(image);
 
-      prediction.forEach(pred => {
+        console.log(prediction);
 
-    console.log(pred.className, pred.probability);
+        let potholeProbability = 0;
+        let normalProbability = 0;
 
-    const className =
-      pred.className.toLowerCase();
+        prediction.forEach(pred => {
 
-    // Anything containing "no" = no potholes
-    if(className.includes("no")) {
+            const className =
+                pred.className.toLowerCase();
 
-        normalProbability =
-          pred.probability * 100;
+            console.log(className, pred.probability);
 
-    } else {
+            // NO POTHOLES CLASS
+            if(className.includes("no")) {
+
+                normalProbability =
+                    pred.probability * 100;
+
+            }
+
+            // POTHOLES CLASS
+            else {
+
+                potholeProbability =
+                    pred.probability * 100;
+            }
+
+        });
 
         potholeProbability =
-          pred.probability * 100;
+            potholeProbability.toFixed(2);
 
+        normalProbability =
+            normalProbability.toFixed(2);
+
+
+        // UPDATE TEXT
+        document.getElementById("potholeText")
+        .innerText =
+            potholeProbability + "%";
+
+        document.getElementById("normalText")
+        .innerText =
+            normalProbability + "%";
+
+
+        // UPDATE BARS
+        document.getElementById("potholeBar")
+        .style.width =
+            potholeProbability + "%";
+
+        document.getElementById("normalBar")
+        .style.width =
+            normalProbability + "%";
+
+
+        // SEVERITY LOGIC
+        const severityBox =
+            document.getElementById("severityBox");
+
+        const status =
+            document.getElementById("status");
+
+        if(potholeProbability >= 1 &&
+           potholeProbability < 50) {
+
+            severityBox.className =
+                "severity low";
+
+            severityBox.innerHTML =
+                "LOW SEVERITY DETECTED<br><br>No urgent maintenance required.";
+
+            status.innerText =
+                "Low Severity";
+        }
+
+        else if(potholeProbability >= 50 &&
+                potholeProbability < 75) {
+
+            severityBox.className =
+                "severity moderate";
+
+            severityBox.innerHTML =
+                "MODERATE DAMAGE DETECTED<br><br>Maintenance recommended soon.";
+
+            status.innerText =
+                "Moderate Attention Required";
+        }
+
+        else if(potholeProbability >= 75) {
+
+            severityBox.className =
+                "severity high";
+
+            severityBox.innerHTML =
+                "CRITICAL POTHOLE DETECTED<br><br>Immediate repair action required.";
+
+            status.innerText =
+                "Immediate Action Required";
+        }
+
+        else {
+
+            severityBox.className =
+                "severity low";
+
+            severityBox.innerHTML =
+                "NO MAJOR POTHOLES DETECTED";
+
+            status.innerText =
+                "Road Condition Normal";
+        }
+
+    } catch(error) {
+
+        console.error(error);
+
+        alert("Prediction failed. Open browser console with F12.");
+
+        document.getElementById("status").innerText =
+            "Prediction Failed";
     }
+}
 
-});
-
-      potholeProbability =
-        potholeProbability.toFixed(2);
-
-      normalProbability =
-        normalProbability.toFixed(2);
-
-      // UPDATE TEXT
-      document.getElementById("potholeText")
-      .innerText =
-        potholeProbability + "%";
-
-      document.getElementById("normalText")
-      .innerText =
-        normalProbability + "%";
-
-      // UPDATE BARS
-      document.getElementById("potholeBar")
-      .style.width =
-        potholeProbability + "%";
-
-      document.getElementById("normalBar")
-      .style.width =
-        normalProbability + "%";
-
-      // SEVERITY
-      const severityBox =
-        document.getElementById("severityBox");
-
-      const status =
-        document.getElementById("status");
-
-      // LOW
-      if(
-        potholeProbability >= 1 &&
-        potholeProbability < 50
-      ){
-
-        severityBox.className =
-          "severity low";
-
-        severityBox.innerHTML =
-          "LOW SEVERITY DETECTED<br><br>" +
-          "Road condition is acceptable.<br>" +
-          "No urgent maintenance required.";
-
-        status.innerText =
-          "Low Severity";
-
-      }
-
-      // MODERATE
-      else if(
-        potholeProbability >= 50 &&
-        potholeProbability < 75
-      ){
-
-        severityBox.className =
-          "severity moderate";
-
-        severityBox.innerHTML =
-          "MODERATE DAMAGE DETECTED<br><br>" +
-          "Road maintenance is recommended soon.<br>" +
-          "Inspection by local authorities advised.";
-
-        status.innerText =
-          "Moderate Attention Required";
-
-      }
-
-      // HIGH
-      else if(
-        potholeProbability >= 75
-      ){
-
-        severityBox.className =
-          "severity high";
-
-        severityBox.innerHTML =
-          "CRITICAL POTHOLE DETECTED<br><br>" +
-          "Immediate repair action required.<br>" +
-          "Potential safety risk for vehicles.";
-
-        status.innerText =
-          "Immediate Action Required";
-
-      }
-
-      // NO POTHOLES
-      else{
-
-        severityBox.className =
-          "severity low";
-
-        severityBox.innerHTML =
-          "NO MAJOR POTHOLES DETECTED<br><br>" +
-          "Road appears to be in good condition.";
-
-        status.innerText =
-          "Road Condition Normal";
-
-      }
-
-    }
-
-  </script>
-
+</script>
 </body>
 </html>
 ```
