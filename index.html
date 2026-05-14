@@ -426,27 +426,25 @@
 
       prediction.forEach(pred => {
 
-        const className =
-          pred.className.toLowerCase();
+    console.log(pred.className, pred.probability);
 
-        // IMPORTANT FIX
-        if(
-          className === "potholes" ||
-          className === "pothole"
-        ){
+    const className =
+      pred.className.toLowerCase();
 
-          potholeProbability =
-            pred.probability * 100;
+    // Anything containing "no" = no potholes
+    if(className.includes("no")) {
 
-        }
-        else{
+        normalProbability =
+          pred.probability * 100;
 
-          normalProbability =
-            pred.probability * 100;
+    } else {
 
-        }
+        potholeProbability =
+          pred.probability * 100;
 
-      });
+    }
+
+});
 
       potholeProbability =
         potholeProbability.toFixed(2);
