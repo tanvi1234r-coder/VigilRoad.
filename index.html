@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Vigil Road Dashboard</title>
 
-  <!-- TensorFlow + Teachable Machine -->
+  <!-- TensorFlow -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+  <!-- Teachable Machine -->
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
   <style>
+
     *{
       margin:0;
       padding:0;
       box-sizing:border-box;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family:Arial, Helvetica, sans-serif;
     }
 
     body{
-      background:#f4f9ff;
-      color:#1e293b;
+      background:#eef5fc;
+      color:#0f172a;
     }
 
     .container{
@@ -27,24 +31,26 @@
       min-height:100vh;
     }
 
-    /* Sidebar */
+    /* SIDEBAR */
+
     .sidebar{
-      width:260px;
-      background:#0f172a;
+      width:250px;
+      background:#071330;
       color:white;
       padding:30px 20px;
     }
 
     .logo{
-      font-size:28px;
+      font-size:38px;
       font-weight:bold;
-      margin-bottom:10px;
       color:#7dd3fc;
+      margin-bottom:10px;
     }
 
     .tagline{
       color:#cbd5e1;
-      font-size:14px;
+      font-size:15px;
+      line-height:1.5;
       margin-bottom:40px;
     }
 
@@ -53,22 +59,18 @@
     }
 
     .menu-item{
-      padding:15px;
-      border-radius:12px;
-      margin-bottom:12px;
-      background:rgba(255,255,255,0.05);
-      transition:0.3s;
-      cursor:pointer;
+      background:#132040;
+      padding:18px;
+      border-radius:14px;
+      font-size:18px;
+      font-weight:bold;
     }
 
-    .menu-item:hover{
-      background:#1e3a8a;
-    }
+    /* MAIN CONTENT */
 
-    /* Main */
     .main{
       flex:1;
-      padding:30px;
+      padding:35px;
     }
 
     .topbar{
@@ -79,14 +81,16 @@
     }
 
     .topbar h1{
-      font-size:32px;
+      font-size:46px;
       color:#0f172a;
     }
 
     .datetime{
       color:#475569;
-      font-size:14px;
+      font-size:16px;
     }
+
+    /* CARDS */
 
     .cards{
       display:grid;
@@ -97,70 +101,100 @@
 
     .card{
       background:white;
-      padding:25px;
-      border-radius:18px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      padding:28px;
+      border-radius:20px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.07);
     }
 
     .card h3{
       color:#64748b;
       margin-bottom:10px;
-      font-size:15px;
+      font-size:18px;
     }
 
     .card p{
-      font-size:26px;
+      font-size:38px;
       font-weight:bold;
-      color:#0f172a;
     }
+
+    /* UPLOAD */
 
     .upload-section{
       background:white;
-      padding:30px;
-      border-radius:20px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
+      border-radius:24px;
+      padding:35px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.07);
     }
 
     .upload-section h2{
-      margin-bottom:20px;
-      color:#0f172a;
+      font-size:34px;
+      margin-bottom:25px;
     }
 
     .upload-box{
-      border:2px dashed #93c5fd;
-      border-radius:16px;
-      padding:40px;
-      text-align:center;
+      border:3px dashed #93c5fd;
       background:#eff6ff;
+      border-radius:18px;
+      padding:50px;
+      text-align:center;
+    }
+
+    .upload-box p{
+      font-size:20px;
+      margin-bottom:20px;
     }
 
     input[type="file"]{
-      margin-top:20px;
+      background:#0ea5e9;
+      color:white;
+      border:none;
+      padding:14px 20px;
+      border-radius:10px;
+      cursor:pointer;
+      font-size:16px;
     }
 
     img{
-      max-width:100%;
-      margin-top:20px;
-      border-radius:14px;
+      margin-top:30px;
+      max-width:500px;
+      width:100%;
+      border-radius:18px;
+      box-shadow:0 5px 15px rgba(0,0,0,0.12);
+      display:none;
     }
 
+    .loading{
+      margin-top:20px;
+      color:#2563eb;
+      font-size:20px;
+      font-weight:bold;
+    }
+
+    /* RESULT */
+
     .result-box{
-      margin-top:30px;
-      padding:25px;
-      border-radius:16px;
+      display:none;
+      margin-top:35px;
       background:#f8fafc;
-      border-left:8px solid #38bdf8;
+      padding:30px;
+      border-radius:20px;
+      border-left:8px solid #0ea5e9;
     }
 
     .result-box h3{
-      margin-bottom:12px;
-      font-size:24px;
+      font-size:32px;
+      margin-bottom:15px;
+    }
+
+    .result-text{
+      font-size:22px;
+      margin-bottom:15px;
     }
 
     .severity{
-      font-size:20px;
+      font-size:24px;
       font-weight:bold;
-      margin-top:10px;
+      margin-bottom:20px;
     }
 
     .low{
@@ -176,22 +210,16 @@
     }
 
     .report-details{
-      margin-top:20px;
       line-height:2;
+      font-size:18px;
       color:#334155;
     }
 
     .footer{
-      margin-top:30px;
+      margin-top:35px;
       text-align:center;
       color:#64748b;
-      font-size:14px;
-    }
-
-    .loading{
-      margin-top:20px;
-      color:#2563eb;
-      font-weight:bold;
+      font-size:15px;
     }
 
   </style>
@@ -201,31 +229,38 @@
 
 <div class="container">
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="logo">Vigil Road</div>
+
+    <div class="logo">
+      Vigil Road
+    </div>
+
     <div class="tagline">
       AI Powered Road Inspection Dashboard
     </div>
 
     <div class="menu">
-      <div class="menu-item">Dashboard</div>
-      <div class="menu-item">Road Reports</div>
-      <div class="menu-item">AI Analysis</div>
-      <div class="menu-item">Authorities Panel</div>
-      <div class="menu-item">Settings</div>
+      <div class="menu-item">
+        Dashboard
+      </div>
     </div>
+
   </div>
 
-  <!-- Main Content -->
+  <!-- MAIN -->
   <div class="main">
 
     <div class="topbar">
+
       <h1>Road Monitoring Dashboard</h1>
-      <div class="datetime" id="currentDateTime"></div>
+
+      <div class="datetime" id="datetime"></div>
+
     </div>
 
-    <!-- Cards -->
+    <!-- CARDS -->
+
     <div class="cards">
 
       <div class="card">
@@ -235,7 +270,7 @@
 
       <div class="card">
         <h3>AI Model Status</h3>
-        <p>Active</p>
+        <p style="color:#16a34a;">Active</p>
       </div>
 
       <div class="card">
@@ -245,38 +280,53 @@
 
     </div>
 
-    <!-- Upload Section -->
+    <!-- UPLOAD -->
+
     <div class="upload-section">
 
       <h2>Upload Road Image</h2>
 
       <div class="upload-box">
+
         <p>
-          Upload an image to check whether the road contains potholes.
+          Upload an image to detect potholes using AI.
         </p>
 
-        <input type="file" id="imageUpload" accept="image/*"/>
+        <input type="file" id="imageUpload" accept="image/*">
 
         <div class="loading" id="loadingText"></div>
 
-        <img id="previewImage" src="" alt="" />
+        <img id="previewImage">
 
       </div>
 
-      <!-- Results -->
-      <div class="result-box" id="resultBox" style="display:none;">
+      <!-- RESULT -->
 
-        <h3 id="predictionTitle">Analysis Result</h3>
+      <div class="result-box" id="resultBox">
 
-        <p id="predictionText"></p>
+        <h3>AI Analysis Result</h3>
+
+        <div class="result-text" id="predictionText"></div>
 
         <div class="severity" id="severityText"></div>
 
         <div class="report-details">
-          <strong>Report ID:</strong> <span id="reportId"></span><br>
-          <strong>Date:</strong> <span id="reportDate"></span><br>
-          <strong>Time:</strong> <span id="reportTime"></span><br>
-          <strong>Recommended Action:</strong> <span id="actionText"></span>
+
+          <strong>Report ID:</strong>
+          <span id="reportID"></span>
+          <br>
+
+          <strong>Date:</strong>
+          <span id="reportDate"></span>
+          <br>
+
+          <strong>Time:</strong>
+          <span id="reportTime"></span>
+          <br>
+
+          <strong>Recommended Action:</strong>
+          <span id="actionText"></span>
+
         </div>
 
       </div>
@@ -293,34 +343,53 @@
 
 <script>
 
+  // YOUR MODEL LINK
   const URL = "https://teachablemachine.withgoogle.com/models/XZiY88SdC/";
 
-  let model, maxPredictions;
+  let model;
 
   async function loadModel() {
-    const modelURL = URL + "model.json";
-    const metadataURL = URL + "metadata.json";
 
-    model = await tmImage.load(modelURL, metadataURL);
-    maxPredictions = model.getTotalClasses();
+    try{
 
-    console.log("Model Loaded Successfully");
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      model = await tmImage.load(modelURL, metadataURL);
+
+      console.log("MODEL LOADED SUCCESSFULLY");
+
+    }catch(error){
+
+      console.error("MODEL FAILED TO LOAD:", error);
+
+      alert("Failed to load AI model.");
+
+    }
+
   }
 
   loadModel();
 
-  // Date and Time
-  function updateDateTime() {
+  // DATE + TIME
+
+  function updateTime(){
+
     const now = new Date();
 
-    document.getElementById("currentDateTime").innerHTML =
-      now.toLocaleDateString() + " | " + now.toLocaleTimeString();
+    document.getElementById("datetime").innerHTML =
+      now.toLocaleDateString() +
+      " | " +
+      now.toLocaleTimeString();
+
   }
 
-  setInterval(updateDateTime, 1000);
-  updateDateTime();
+  setInterval(updateTime, 1000);
 
-  // Upload Image
+  updateTime();
+
+  // FILE UPLOAD
+
   document.getElementById("imageUpload").addEventListener("change", async function(event){
 
     const file = event.target.files[0];
@@ -328,93 +397,151 @@
     if(!file) return;
 
     const image = document.getElementById("previewImage");
-    image.src = URL.createObjectURL(file);
 
-    image.onload = async () => {
+    image.src = window.URL.createObjectURL(file);
 
-      document.getElementById("loadingText").innerText = "Analyzing image using AI...";
+    image.style.display = "block";
 
-      const prediction = await model.predict(image);
+    document.getElementById("loadingText").innerHTML =
+      "Analyzing image using AI...";
 
-      let potholeProbability = 0;
+    image.onload = async function(){
 
-      prediction.forEach(pred => {
+      try{
 
-        if(pred.className.toLowerCase().includes("pothole")) {
-          potholeProbability = pred.probability * 100;
+        const prediction = await model.predict(image);
+
+        console.log(prediction);
+
+        let potholeProbability = 0;
+
+        // IMPORTANT FIX
+        // This now properly checks for the pothole class
+
+        prediction.forEach((pred) => {
+
+          const className = pred.className.toLowerCase();
+
+          if(
+            className.includes("pothole") &&
+            !className.includes("no")
+          ){
+
+            potholeProbability =
+              pred.probability * 100;
+
+          }
+
+        });
+
+        potholeProbability =
+          potholeProbability.toFixed(2);
+
+        let severity = "";
+        let severityClass = "";
+        let action = "";
+
+        // SEVERITY LOGIC
+
+        if(potholeProbability < 50){
+
+          severity =
+            "Low Severity - Not Very Serious";
+
+          severityClass = "low";
+
+          action =
+            "Monitor the road periodically.";
+
+        }
+        else if(
+          potholeProbability >= 50 &&
+          potholeProbability < 75
+        ){
+
+          severity =
+            "Moderate Severity";
+
+          severityClass = "moderate";
+
+          action =
+            "Road maintenance recommended.";
+
+        }
+        else{
+
+          severity =
+            "High Severity - Immediate Action Required";
+
+          severityClass = "high";
+
+          action =
+            "Deploy emergency repair team immediately.";
+
+          let emergencyCases =
+            parseInt(
+              document.getElementById("emergencyCases").innerText
+            );
+
+          document.getElementById("emergencyCases").innerText =
+            emergencyCases + 1;
+
         }
 
-      });
+        // SHOW RESULT
 
-      potholeProbability = potholeProbability.toFixed(2);
+        document.getElementById("resultBox").style.display =
+          "block";
 
-      let severity = "";
-      let severityClass = "";
-      let action = "";
+        document.getElementById("predictionText").innerHTML =
+          `
+          <strong>Pothole Detection Probability:</strong>
+          ${potholeProbability}%
+          `;
 
-      if(potholeProbability >= 1 && potholeProbability < 50){
+        const severityElement =
+          document.getElementById("severityText");
 
-        severity = "Low Severity - Not Very Serious";
-        severityClass = "low";
-        action = "Monitor the road condition.";
+        severityElement.innerHTML = severity;
+
+        severityElement.className =
+          "severity " + severityClass;
+
+        // REPORT ID
+
+        const reportID =
+          "VR-" +
+          Math.floor(
+            100000 + Math.random() * 900000
+          );
+
+        document.getElementById("reportID").innerText =
+          reportID;
+
+        // DATE + TIME
+
+        const now = new Date();
+
+        document.getElementById("reportDate").innerText =
+          now.toLocaleDateString();
+
+        document.getElementById("reportTime").innerText =
+          now.toLocaleTimeString();
+
+        document.getElementById("actionText").innerText =
+          action;
+
+        document.getElementById("loadingText").innerHTML =
+          "";
+
+      }catch(error){
+
+        console.error(error);
+
+        document.getElementById("loadingText").innerHTML =
+          "AI analysis failed.";
 
       }
-      else if(potholeProbability >= 50 && potholeProbability < 75){
-
-        severity = "Moderate Severity";
-        severityClass = "moderate";
-        action = "Maintenance is recommended soon.";
-
-      }
-      else if(potholeProbability >= 75){
-
-        severity = "High Severity - Immediate Action Required";
-        severityClass = "high";
-        action = "Send repair team immediately.";
-
-        let emergencyCount =
-          parseInt(document.getElementById("emergencyCases").innerText);
-
-        document.getElementById("emergencyCases").innerText =
-          emergencyCount + 1;
-      }
-      else{
-
-        severity = "No Significant Potholes Detected";
-        severityClass = "low";
-        action = "No action required.";
-
-      }
-
-      // Show Results
-      document.getElementById("resultBox").style.display = "block";
-
-      document.getElementById("predictionText").innerHTML =
-        `<strong>Pothole Detection Probability:</strong> ${potholeProbability}%`;
-
-      const severityElement = document.getElementById("severityText");
-
-      severityElement.innerText = severity;
-      severityElement.className = "severity " + severityClass;
-
-      // Report ID
-      const reportID =
-        "VR-" + Math.floor(100000 + Math.random() * 900000);
-
-      document.getElementById("reportId").innerText = reportID;
-
-      // Date & Time
-      const now = new Date();
-
-      document.getElementById("reportDate").innerText =
-        now.toLocaleDateString();
-
-      document.getElementById("reportTime").innerText =
-        now.toLocaleTimeString();
-
-      document.getElementById("actionText").innerText = action;
-
-      document.getElementById("loadingText").innerText = "";
 
     };
 
