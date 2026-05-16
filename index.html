@@ -412,6 +412,13 @@
         const prediction = await model.predict(image);
 
         console.log(prediction);
+        let currentReports =
+  parseInt(
+    document.getElementById("reportCount").innerText
+  );
+
+document.getElementById("reportCount").innerText =
+  currentReports + 1;
 
         let potholeProbability = 0;
 
